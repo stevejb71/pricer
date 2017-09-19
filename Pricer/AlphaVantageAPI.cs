@@ -5,10 +5,13 @@ namespace Pricer.PriceSource
 {
     using Model;
     using RestSharp;
+    using System.Linq;
+    using System.Reactive.Concurrency;
+    using System.Reactive.Linq;
 
     public interface IAlphaVantageAPI
     {
-        IObservable<CurrentPrice> GetLatestPrices(string ticker);
+        IObservable<CurrentPrice> GetLatestPrices(string ticker, string apiKey);
 
         List<HistoricalPrice> GetHistoricalPrices(int daysOfHistory);
     }
@@ -22,10 +25,11 @@ namespace Pricer.PriceSource
             _dataSource = dataSource;
         }
 
-        public IObservable<CurrentPrice> GetLatestPrices(string ticker)
+        public IObservable<CurrentPrice> GetLatestPrices(string ticker, string apiKey)
         {
-            Timer
-            throw new NotImplementedException();
+            return Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(30), Scheduler.Default)
+                .Select(_ => _dataSource.GetCurrentPrice(ticker, apiKey))
+                .Distinct();
         }
 
         public List<HistoricalPrice> GetHistoricalPrices(int daysOfHistory)

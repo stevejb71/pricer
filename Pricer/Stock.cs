@@ -16,6 +16,22 @@ namespace Pricer.Model
     {
         public double LastTradePrice { get; set; }
         public long Volume { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var price = obj as CurrentPrice;
+            return price != null &&
+                   LastTradePrice == price.LastTradePrice &&
+                   Volume == price.Volume;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = 542162481;
+            hashCode = hashCode * -1521134295 + LastTradePrice.GetHashCode();
+            hashCode = hashCode * -1521134295 + Volume.GetHashCode();
+            return hashCode;
+        }
     }
 
     public class HistoricalPrice
