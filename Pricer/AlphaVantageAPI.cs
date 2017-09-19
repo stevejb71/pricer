@@ -29,6 +29,8 @@ namespace Pricer.PriceSource
         {
             return Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(30), Scheduler.Default)
                 .Select(_ => _dataSource.GetCurrentPrice(ticker, apiKey))
+                // catches (and drops) errors, which will happen with bad API Key
+                .Catch(Observable.Empty<CurrentPrice>())
                 .Distinct();
         }
 
@@ -44,7 +46,7 @@ namespace Pricer.PriceSource
         {
             var client = new RestClient("https://www.alphavantage.co");
             var request = new RestRequest("query", Method.GET);
-            request.AddQueryParameter("function", "TIME_SERIES_WEEKLY");
+            request.AddQueryParameter("function", "TIME_SERIES_DAILY");
             request.AddQueryParameter("symbol", ticker);
             request.AddQueryParameter("apikey", apiKey);
 
@@ -58,13 +60,18 @@ namespace Pricer.PriceSource
     {
         internal static CurrentPrice Parse(Dictionary<string, object> raw)
         {
-            var timeSeries = (Dictionary<string, object>)raw["Weekly Time Series"];
-            var latest = (Dictionary<string, object>)timeSeries.OrderBy(kv => kv.Key).First().Value;
+            var timeSeries = (Dictionary<string, object>)raw["Time Series (Daily)"];
+            var latest = (Dictionary<string, object>)timeSeries.First().Value;
             return new CurrentPrice
             {
                 Volume = int.Parse((string)latest["5. volume"]),
                 LastTradePrice = double.Parse((string)latest["4. close"])
             };
+        }
+
+        internal static List<HistoricalPrice> ParseHistorical(Dictionary<string, object> raw)
+        {
+            return null; 
         }
     }
 }

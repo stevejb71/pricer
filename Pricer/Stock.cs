@@ -1,15 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Pricer.Model
 {
     // Instance constructor would be nice here, c# 7 doesn't seem to be installed
     // by default.
-    public class Stock
+    public class Stock : INotifyPropertyChanged
     {
         public string Ticker { get; set; }
-        public CurrentPrice Price { get; set; }
+        private CurrentPrice _price;
+        public CurrentPrice Price
+        {
+            get
+            {
+                return _price;
+            }
+            set
+            {
+                _price = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Price"));
+            }
+        }
         public List<HistoricalPrice> HistoricalPrices { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class CurrentPrice
