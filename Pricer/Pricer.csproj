@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="HistoricalDatabase.cs" />
     <Compile Include="Stock.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">

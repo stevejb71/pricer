@@ -13,7 +13,7 @@ namespace Pricer.PriceSource
     {
         IObservable<CurrentPrice> GetLatestPrices(string ticker, string apiKey);
 
-        List<HistoricalPrice> GetHistoricalPrices(int daysOfHistory);
+        List<HistoricalPrice> GetHistoricalPrices(string ticker, int daysOfHistory, string apiKey);
     }
 
     public class AlphaVantageAPI : IAlphaVantageAPI
@@ -28,21 +28,22 @@ namespace Pricer.PriceSource
         public IObservable<CurrentPrice> GetLatestPrices(string ticker, string apiKey)
         {
             return Observable.Timer(TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(30), Scheduler.Default)
-                .Select(_ => _dataSource.GetCurrentPrice(ticker, apiKey))
+                .Select(_ => _dataSource.GetDailyPrices(ticker, apiKey))
+                .Select(Parser.Parse)
                 // catches (and drops) errors, which will happen with bad API Key
                 .Catch(Observable.Empty<CurrentPrice>())
                 .Distinct();
         }
 
-        public List<HistoricalPrice> GetHistoricalPrices(int daysOfHistory)
+        public List<HistoricalPrice> GetHistoricalPrices(string ticker, int daysOfHistory, string apiKey)
         {
-            throw new NotImplementedException();
+            return Parser.ParseHistorical(_dataSource.GetDailyPrices(ticker, apiKey));
         }
     }
 
     public class AlphaVantageDataSource
     {
-        public CurrentPrice GetCurrentPrice(string ticker, string apiKey)
+        public Dictionary<string, object> GetDailyPrices(string ticker, string apiKey)
         {
             var client = new RestClient("https://www.alphavantage.co");
             var request = new RestRequest("query", Method.GET);
@@ -50,9 +51,7 @@ namespace Pricer.PriceSource
             request.AddQueryParameter("symbol", ticker);
             request.AddQueryParameter("apikey", apiKey);
 
-            var response = client.Execute<Dictionary<string, object>>(request);
-
-            return Parser.Parse(response.Data);
+            return client.Execute<Dictionary<string, object>>(request).Data;
         }
     }
 

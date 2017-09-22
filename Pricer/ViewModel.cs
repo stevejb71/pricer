@@ -32,7 +32,11 @@ namespace Pricer
         private readonly IAlphaVantageAPI _priceDataSource;
         private List<IDisposable> _subscriptions = new List<IDisposable>();
 
-        public ViewModelUpdater(IAlphaVantageAPI priceDataSource, ViewModel viewModel)
+        public ViewModelUpdater(
+            IAlphaVantageAPI priceDataSource,
+            IHistoricalDatabase historicalDatabase,
+            ViewModel viewModel
+            )
         {
             _priceDataSource = priceDataSource;
             viewModel.PropertyChanged += (sender, e) => 
@@ -40,6 +44,11 @@ namespace Pricer
                 if(e.PropertyName == "ApiKey")
                 {
                     Update(viewModel.ApiKey, viewModel.Stocks);
+                    foreach(var stock in viewModel.Stocks)
+                    {
+                        var prices = priceDataSource.GetHistoricalPrices(stock.Ticker, 10, viewModel.ApiKey);
+                        historicalDatabase.Update(stock.Ticker, prices);
+                    }
                 }
             };
         }
@@ -52,6 +61,7 @@ namespace Pricer
                 var sub = Subscribe(apiKey, stock);
                 _subscriptions.Add(sub);
             }
+
         }
 
         private IDisposable Subscribe(string apiKey, Stock stock)

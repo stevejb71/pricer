@@ -8,8 +8,8 @@ namespace Pricer.PriceSource.Tests
         [Fact] // (Skip = "Explicit - goes to external site")]
         public void Returns_a_stock()
         {
-            var content = new AlphaVantageDataSource().GetCurrentPrice("0200.HK", "QPYUOY7PYQ4L4OEP");
-            content.LastTradePrice.ShouldBeGreaterThan(0.0);
+            var content = new AlphaVantageDataSource().GetDailyPrices("0200.HK", "QPYUOY7PYQ4L4OEP");
+            content.Count.ShouldBeGreaterThan(0);
         }
     }
 }
