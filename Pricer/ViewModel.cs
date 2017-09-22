@@ -61,7 +61,6 @@ namespace Pricer
                 var sub = Subscribe(apiKey, stock);
                 _subscriptions.Add(sub);
             }
-
         }
 
         private IDisposable Subscribe(string apiKey, Stock stock)
