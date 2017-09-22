@@ -60,18 +60,26 @@ namespace Pricer.PriceSource
     {
         internal static CurrentPrice Parse(Dictionary<string, object> raw)
         {
-            var timeSeries = (Dictionary<string, object>)raw["Time Series (Daily)"];
-            var latest = (Dictionary<string, object>)timeSeries.First().Value;
+            var latestPrice = ParseHistorical(raw).First();
             return new CurrentPrice
             {
-                Volume = int.Parse((string)latest["5. volume"]),
-                LastTradePrice = double.Parse((string)latest["4. close"])
+                LastTradePrice = latestPrice.ClosePrice,
+                Volume = latestPrice.Volume
             };
         }
 
         internal static List<HistoricalPrice> ParseHistorical(Dictionary<string, object> raw)
         {
-            return null; 
+            var timeSeriesObj = (Dictionary<string, object>)raw["Time Series (Daily)"];
+            return timeSeriesObj
+                .ToDictionary(x => x.Key, x => (Dictionary<string, object>)x.Value)
+                .Select(kv => new HistoricalPrice
+                {
+                    Date = Convert.ToDateTime(kv.Key),
+                    ClosePrice = double.Parse((string)kv.Value["4. close"]),
+                    Volume = int.Parse((string)kv.Value["5. volume"])
+                })
+                .ToList();
         }
     }
 }
