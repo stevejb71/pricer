@@ -23,7 +23,7 @@
 
         public void Update(string ticker, List<HistoricalPrice> prices)
         {
-            _pricesByTicker.Add(ticker, prices);
+            _pricesByTicker[ticker] = prices;
         }
     }
 }
