@@ -25,7 +25,8 @@
                 ApiKey = "",
                 Stocks = new ObservableCollection<Stock>(
                     tickers.Select(ZeroPrice)
-                    )
+                    ),
+                SelectedHistoricalPrices = new ObservableCollection<HistoricalPrice>()
             };
             this.DataContext = viewModel;
 

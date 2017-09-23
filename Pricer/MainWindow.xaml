@@ -29,7 +29,17 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ListBox x:Name="HistoricalPricesList" Grid.Row="1" Grid.Column="1" Margin="0,0,2,0">
+        <ListBox x:Name="HistoricalPricesList" Grid.Row="1" Grid.Column="1" Margin="0,0,2,0" ItemsSource="{Binding Path=Stocks}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=SelectedHistoricalPrice.Date}" Margin="0,0,30,0"/>
+                        <TextBlock Text="{Binding Path=SelectedHistoricalPrice.LastTradePrice}" Margin="0,0,25,0"/>
+                        <TextBlock Text="{Binding Path=SelectedHistoricalPrice.Volume}" Margin="0,0,5,0"/>
+                        <TextBlock Text="{Binding Path=SelectedHistoricalPrice.ClosePrice}" Margin="0,0,5,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
     </Grid>
 </Window>

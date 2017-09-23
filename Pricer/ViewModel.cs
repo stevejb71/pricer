@@ -23,6 +23,7 @@ namespace Pricer
             }
         }
         public ObservableCollection<Stock> Stocks { get; set; }
+        public ObservableCollection<HistoricalPrice> SelectedHistoricalPrices { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
     }
