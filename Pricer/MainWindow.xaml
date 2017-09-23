@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Pricer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Pricer" Height="350" Width="525">
     <Grid x:Name="LayoutRoot" Height="300">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
@@ -15,20 +14,22 @@
             <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Content="API Key" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="0" Grid.Column="1">
-            <Binding Path="ApiKey" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="API Key" HorizontalAlignment="Right" Margin="0,0,5,0"/>
+        <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="0,0,2,0">
+            <Binding Path="ApiKey" UpdateSourceTrigger="PropertyChanged"/>
         </TextBox>
-        <ListBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" ItemsSource="{Binding Path=Stocks}">
+        <ListBox x:Name="LatestPricesList" Grid.Row="1" Grid.Column="0" Margin="2,0,10,0" ItemsSource="{Binding Path=Stocks}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Ticker}" Margin="0,0,50,0"/>
-                        <TextBlock Text="{Binding Path=Price.LastTradePrice}" Margin="0,0,50,0"/>
-                        <TextBlock Text="{Binding Path=Price.Volume}" Margin="0,0,50,0"/>
+                        <TextBlock Text="{Binding Path=Ticker}" Margin="0,0,30,0"/>
+                        <TextBlock Text="{Binding Path=Price.LastTradePrice}" Margin="0,0,25,0"/>
+                        <TextBlock Text="{Binding Path=Price.Volume}" Margin="0,0,5,0"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
+        </ListBox>
+        <ListBox x:Name="HistoricalPricesList" Grid.Row="1" Grid.Column="1" Margin="0,0,2,0">
         </ListBox>
     </Grid>
 </Window>
