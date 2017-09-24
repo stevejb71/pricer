@@ -25,6 +25,21 @@ namespace Pricer
         public ObservableCollection<Stock> Stocks { get; set; }
         public ObservableCollection<HistoricalPrice> SelectedHistoricalPrices { get; set; }
 
+        private Stock _selectedStock;
+        public Stock SelectedStock
+        {
+            get
+            {
+                return _selectedStock;
+            }
+            set
+            {
+                if (_selectedStock == value) return;
+                _selectedStock = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedStock"));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 
@@ -42,14 +57,23 @@ namespace Pricer
             _priceDataSource = priceDataSource;
             viewModel.PropertyChanged += (sender, e) => 
             {
-                if(e.PropertyName == "ApiKey")
+                switch(e.PropertyName)
                 {
-                    Update(viewModel.ApiKey, viewModel.Stocks);
-                    foreach(var stock in viewModel.Stocks)
-                    {
-                        var prices = priceDataSource.GetHistoricalPrices(stock.Ticker, 10, viewModel.ApiKey);
-                        historicalDatabase.Update(stock.Ticker, prices);
-                    }
+                    case "ApiKey":
+                        Update(viewModel.ApiKey, viewModel.Stocks);
+                        foreach(var stock in viewModel.Stocks)
+                        {
+                            var prices = priceDataSource.GetHistoricalPrices(stock.Ticker, 10, viewModel.ApiKey);
+                            historicalDatabase.Update(stock.Ticker, prices);
+                        }
+                        break;
+                    case "SelectedStock":
+                        var historicalPrices = historicalDatabase.GetPrices(viewModel.SelectedStock.Ticker);
+                        viewModel.SelectedHistoricalPrices.Clear();
+                        historicalPrices.ForEach(viewModel.SelectedHistoricalPrices.Add);
+                        break;
+                    default:
+                        throw new Exception($"Unhandled: {e.PropertyName}");
                 }
             };
         }

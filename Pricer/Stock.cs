@@ -52,7 +52,6 @@ namespace Pricer.Model
     public class HistoricalPrice
     {
         public DateTime Date { get; set; }
-        public double LastTradePrice { get; set; }
         public long Volume { get; set; }
         public double ClosePrice { get; set; }
     }
